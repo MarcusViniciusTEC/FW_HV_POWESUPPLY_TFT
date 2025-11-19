@@ -1,0 +1,28 @@
+{
+    "cmake.configureOnOpen": true,
+    "cmake.additionalCompilerSearchDirs": [
+        "C:\\ST\\STM32CubeCLT\\GNU-tools-for-STM32",
+        "C:\\ST\\STM32CubeCLT\\GNU-tools-for-STM32\\bin"
+    ],
+    "cmake.buildEnvironment": {
+         "PATH": "C:\\\\Windows\\\\system32;C:\\ST\\STM32CubeCLT\\GNU-tools-for-STM32\\bin"
+    },
+    "files.associations": {
+        "sl.h": "c",
+        "sl_cfg.h": "c",
+        "piezo.h": "c",
+        "hmi_menu_cfg.h": "c",
+        "type_traits": "c",
+        "stdio.h": "c",
+        "adc_cfg.h": "c",
+        "hmi_current.h": "c",
+        "hmi_menu.h": "c",
+        "ssd1306_fonts.h": "c",
+        "encoder.h": "c",
+        "compare": "c",
+        "hmi_menu_types.h": "c",
+        "hmi_intro.h": "c",
+        "hmi_dashboard.h": "c"
+    }
+
+}
