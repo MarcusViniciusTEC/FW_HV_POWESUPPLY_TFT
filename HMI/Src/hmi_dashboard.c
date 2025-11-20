@@ -9,11 +9,10 @@
 #include "hmi.h"
 
 #include "main.h"
-#include "ADS1015_ADS1115.h"
+#include "adc.h"
 
 #include "hmi_dashboard_types.h"
 
-ADS1xx5_I2C i2c_adc;
 
 /***********************************************************************************/
 
@@ -69,7 +68,23 @@ static void hmi_dashboard_show_current(void)
 
 static void hmi_dashboard_show_voltage(void)
 {
-    ST7789_WriteString(5, 80, "23.100 V", Font_16x26, RED, BLACK);
+
+ 
+    // ST7789_WriteString(143, 30, "SET:",Font_11x18, LIGHTBLUE, BLACK);
+    // char sz_string[28] = {0};
+    // snprintf(sz_string, sizeof(sz_string), "%d%d%d%d%d", 
+    // (int)(ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/10000),
+    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/1000) % 10),
+    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/100) % 10),
+    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/10) % 10),
+    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE) % 10)));
+    // ST7789_WriteString(5, 80, sz_string, Font_16x26, RED, BLACK);
+
+    char sz_string[28] = {0};
+    snprintf(sz_string, sizeof(sz_string), "%d",(int) ((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)*0.012)));
+    ST7789_WriteString(5, 80, sz_string, Font_16x26, RED, BLACK);
+
+
 }
 
 /***********************************************************************************/
@@ -296,7 +311,7 @@ void hmi_dashboard_show_screen(void)
 void hmi_dashboard_update_data(void)
 {
     //hmi_dashboard_show_resistence();
-   //hmi_dashboard_show_voltage();
+   hmi_dashboard_show_voltage();
 }
 
 /***********************************************************************************/

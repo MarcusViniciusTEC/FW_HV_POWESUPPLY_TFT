@@ -28,7 +28,7 @@
 #include "hmi.h"
 #include "encoder.h"
 #include "dac.h"
-#include "ADS1015_ADS1115.h"
+#include "adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -430,6 +430,8 @@ void StartDefaultTask(void const * argument)
   hmi_init();
   encoder_init();
   DAC_MCP4725_init();
+  ADC_ADS1115_init();
+
 
   DAC_MCP4725_set(DAC_CURRENT, 500);
   DAC_MCP4725_set(DAC_VOLTAGE, 500);
