@@ -275,7 +275,7 @@ void hmi_dashboard_show_screen(void)
     ST7789_WriteString(10, 1, "DASHBOARD", Font_16x26, YELLOW, BLACK);
     ST7789_DrawLine(0, 27, 318, 27, WHITE);
     ST7789_DrawLine(0, 180, 318, 180, WHITE);
-    ST7789_WriteString(12, 200, "ABL Solutions Ind", Font_16x26, BLUE, BLACK);
+    ST7789_WriteString(12, 200, "MM TECH", Font_16x26, BLUE, BLACK);
     ST7789_DrawRectangle(0, 0, 318, 239, WHITE);
     ST7789_DrawLine(137, 27, 137, 180, WHITE);
     ST7789_DrawLine(137, 145, 318, 145, WHITE);

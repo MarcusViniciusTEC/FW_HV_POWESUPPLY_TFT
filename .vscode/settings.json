@@ -22,7 +22,11 @@
         "compare": "c",
         "hmi_menu_types.h": "c",
         "hmi_intro.h": "c",
-        "hmi_dashboard.h": "c"
+        "hmi_dashboard.h": "c",
+        "dac.h": "c",
+        "ads1015_ads1115.h": "c",
+        "hmi.h": "c",
+        "buttons.h": "c"
     }
 
 }

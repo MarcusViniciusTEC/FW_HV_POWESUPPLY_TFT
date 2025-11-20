@@ -27,7 +27,7 @@
 #include "fonts.h"
 #include "hmi.h"
 #include "encoder.h"
-#include "MCP4725.h"
+#include "dac.h"
 #include "ADS1015_ADS1115.h"
 /* USER CODE END Includes */
 
@@ -58,7 +58,7 @@ TIM_HandleTypeDef htim2;
 osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
 
-MCP4725 DAC_CURRENT;
+
 
 
 /* USER CODE END PV */
@@ -429,22 +429,14 @@ void StartDefaultTask(void const * argument)
   ST7789_Fill_Color(BLACK);
   hmi_init();
   encoder_init();
- // DAC_CURRENT = MCP4725_init(&hi2c1, MCP4725A0_ADDR_A00, 3.30);
+  DAC_MCP4725_init();
 
-
-
-//  if(MCP4725_isConnected(&DAC_CURRENT))
-  // {
-
-  // }
-  // else
-  // {
-
-  // }
+  DAC_MCP4725_set(DAC_CURRENT, 500);
+  DAC_MCP4725_set(DAC_VOLTAGE, 500);
 
   for(;;)
   {
-   // MCP4725_setValue(&DAC_CURRENT, 10, MCP4725_FAST_MODE, MCP4725_POWER_DOWN_OFF);    
+   
     HAL_GPIO_TogglePin(LED_BOARD_GPIO_Port, LED_BOARD_Pin);
     vTaskDelay(500);
   }

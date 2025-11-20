@@ -46,11 +46,12 @@ ${PROJ_PATH}/HMI/Src/hmi_menu.c
 ${PROJ_PATH}/HMI/Src/hmi_intro.c
 ${PROJ_PATH}/HMI/Src/hmi_dashboard.c
 ${PROJ_PATH}/App/Src/adc.c
+${PROJ_PATH}/App/Src/dac.c
 
 ${PROJ_PATH}/DISPLAY/Src/st7789.c
 ${PROJ_PATH}/DISPLAY/Src/fonts.c
-##E${PROJ_PATH}/App/Src/MCP4725.c
-##${PROJ_PATH}/App/Src/ADS1015_ADS1115.c
+${PROJ_PATH}/App/Src/MCP4725.c
+${PROJ_PATH}/App/Src/ADS1015_ADS1115.c
 
 ${PROJ_PATH}/Core/Src/main.c
 ${PROJ_PATH}/Core/Src/freertos.c
