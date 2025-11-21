@@ -55,7 +55,7 @@ void hmi_init(void)
                     }
                     else
                     {
-                        
+                        HAL_GPIO_WritePin(LED_BOARD_GPIO_Port, LED_BOARD_Pin, 1);
                     }
 
     if(xTaskCreate((TaskFunction_t)hmi_tread_update_screen,         

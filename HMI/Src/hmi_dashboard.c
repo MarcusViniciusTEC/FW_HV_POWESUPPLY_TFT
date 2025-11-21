@@ -68,23 +68,16 @@ static void hmi_dashboard_show_current(void)
 
 static void hmi_dashboard_show_voltage(void)
 {
-
- 
-    // ST7789_WriteString(143, 30, "SET:",Font_11x18, LIGHTBLUE, BLACK);
-    // char sz_string[28] = {0};
-    // snprintf(sz_string, sizeof(sz_string), "%d%d%d%d%d", 
-    // (int)(ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/10000),
-    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/1000) % 10),
-    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/100) % 10),
-    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)/10) % 10),
-    // (int)((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE) % 10)));
-    // ST7789_WriteString(5, 80, sz_string, Font_16x26, RED, BLACK);
-
+    uint32_t voltage = ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)*0.74;
     char sz_string[28] = {0};
-    snprintf(sz_string, sizeof(sz_string), "%d",(int) ((ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)*0.012)));
+
+        snprintf(sz_string, sizeof(sz_string), "%03d.%02d",
+        (int)(voltage / 100),
+        (int)(voltage % 100));
+
+
     ST7789_WriteString(5, 80, sz_string, Font_16x26, RED, BLACK);
-
-
+    ST7789_WriteString(110, 80, "V", Font_16x26, RED, BLACK);
 }
 
 /***********************************************************************************/

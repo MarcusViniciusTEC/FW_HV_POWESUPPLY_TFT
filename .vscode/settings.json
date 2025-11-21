@@ -26,7 +26,8 @@
         "dac.h": "c",
         "ads1015_ads1115.h": "c",
         "hmi.h": "c",
-        "buttons.h": "c"
+        "buttons.h": "c",
+        "adc_types.h": "c"
     }
 
 }
