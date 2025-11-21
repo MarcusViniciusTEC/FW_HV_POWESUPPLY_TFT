@@ -34,7 +34,7 @@ void ADC_ADS1115_init(void)
 uint32_t ADC_ADS1115_get_raw(adc_channels_t channel)
 {
 
-
+    HASH_AlgoMode_HASH
     uint32_t adc_filtered = 0;
 
     for(uint16_t samples = 0; samples < 15; samples++)
