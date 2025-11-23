@@ -10,6 +10,7 @@
 
 #include "main.h"
 #include "adc.h"
+#include "app.h"
 
 #include "hmi_dashboard_types.h"
 
@@ -28,9 +29,9 @@ static void hmi_dashboard_show_power(void);
 static void hmi_dashboard_show_current(void);
 static void hmi_dashboard_show_temp(void);
 static void hmi_dashboard_show_time(void);
-static void hmi_dashboard_show_resistence(void);
 static void hmi_dashboard_show_out_status(void);
-static void hmi_dashboard_show_target(void);
+static void hmi_dashboard_show_target_voltage(void);
+static void hmi_dashboard_show_target_current(void);
 static void hmi_dashboard_show_cursor(void);
 static void hmi_dashboard_increment_digit(void);
 static void hmi_dashboard_decrement_digit(void);
@@ -61,45 +62,44 @@ hmi_out_state_t hmi_dashboard_get_out_state(void)
 static void hmi_dashboard_show_current(void)
 {
     ST7789_WriteString(5, 30, "Read:",Font_11x18, LIGHTBLUE, BLACK);
-    ST7789_WriteString(5, 50, "00.000 A",Font_16x26, GREEN, BLACK);
+
+    uint32_t current = app_get_miliamperes(ADC_CH_CURRENT_OUT);
+    char sz_string[28] = {0};
+
+    snprintf(sz_string, sizeof(sz_string), "%02d.%03d",
+    (int)(current / 1000),
+    (int)(current % 1000));
+
+    ST7789_WriteString(5, 80, sz_string, Font_16x26, CYAN, BLACK);
+    ST7789_WriteString(115, 80, "A", Font_16x26, CYAN, BLACK);
 }
 
 /***********************************************************************************/
 
 static void hmi_dashboard_show_voltage(void)
 {
-    uint32_t voltage = ADC_ADS1115_get_raw(ADC_CH_VOLTAGE)*0.74;
+    uint32_t voltage = app_get_centivolts(ADC_CH_VOLTAGE);
     char sz_string[28] = {0};
+    snprintf(sz_string, sizeof(sz_string), "%03d.%02d",
+             (int)(voltage / 100),
+             (int)(voltage % 100));
 
-        snprintf(sz_string, sizeof(sz_string), "%03d.%02d",
-        (int)(voltage / 100),
-        (int)(voltage % 100));
-
-
-    ST7789_WriteString(5, 80, sz_string, Font_16x26, RED, BLACK);
-    ST7789_WriteString(110, 80, "V", Font_16x26, RED, BLACK);
+    ST7789_WriteString(5, 50, sz_string, Font_16x26, RED, BLACK);
+    ST7789_WriteString(115, 50, "V", Font_16x26, RED, BLACK);
 }
 
 /***********************************************************************************/
 
 static void hmi_dashboard_show_power(void)
 {
-    ST7789_WriteString(5, 110, "00.000 W", Font_16x26, YELLOW, BLACK);
-}
+    uint32_t power = app_get_centiwatts();
+    char sz_string[28] = {0};
+    snprintf(sz_string, sizeof(sz_string), "%03d.%02d",
+             (int)(power / 100),
+             (int)(power % 100));
 
-/***********************************************************************************/
-
-static void hmi_dashboard_show_resistence(void)
-{
-    // char sz_string[20] = {0};
-    // snprintf(sz_string, sizeof(sz_string), "%d%d.%d%d%d",
-    // (ADSreadADC_SingleEnded(&i2c_adc, 0)/10000),
-    // (ADSreadADC_SingleEnded(&i2c_adc, 0)/1000) % 10,
-    // (ADSreadADC_SingleEnded(&i2c_adc, 0)/100) % 10,
-    // (ADSreadADC_SingleEnded(&i2c_adc, 0)/10) % 10,
-    // (ADSreadADC_SingleEnded(&i2c_adc, 0) % 10));
-    // //ST7789_WriteString(5, 140, "00.000 R",Font_16x26, GRAY, BLACK);   
-    // ST7789_WriteString(5, 140, sz_string,Font_16x26, GRAY, BLACK);
+    ST7789_WriteString(5, 110, sz_string, Font_16x26, GRAY, BLACK);
+    ST7789_WriteString(115, 110, "W", Font_16x26, GRAY, BLACK);
 }
 
 /***********************************************************************************/
@@ -143,32 +143,38 @@ static void hmi_dashboard_show_out_status(void)
 
 /***********************************************************************************/
 
-static void hmi_dashboard_show_target(void)
+static void hmi_dashboard_show_target_voltage(void)
 {
-    // ST7789_WriteString(143, 30, "SET:",Font_11x18, LIGHTBLUE, BLACK);
-    // char sz_string[20] = {0};
-    // snprintf(sz_string, sizeof(sz_string), "%u%u.%u%u %s",
-    // hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT],
-    // hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_SECOND_DIGIT],
-    // hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_THIRD_DIGIT],
-    // hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FOURTH_DIGIT],
-    // hmi_dashboard_str[hmi_dashboard_ctrl.mode].symbol);
-    // ST7789_WriteString(143, 50, sz_string, Font_16x26, hmi_dashboard_str[hmi_dashboard_ctrl.mode].color, BLACK);
-
-
-    uint32_t value = 0;
-
-    value  += hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT]*100;
-    value  += hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_SECOND_DIGIT]*10;
-    value  += hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_THIRD_DIGIT];
 
     ST7789_WriteString(143, 30, "SET:",Font_11x18, LIGHTBLUE, BLACK);
-    char sz_string[20] = {0};
-    snprintf(sz_string, sizeof(sz_string), "%d.%u", value, hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FOURTH_DIGIT]);
+    uint32_t value = 0;
+
+    value  += hmi_edit[MODE_CONSTANT_VOLTAGE].value[INDEX_FIRST_DIGIT]*100;
+    value  += hmi_edit[MODE_CONSTANT_VOLTAGE].value[INDEX_SECOND_DIGIT]*10;
+    value  += hmi_edit[MODE_CONSTANT_VOLTAGE].value[INDEX_THIRD_DIGIT];
+
+    char sz_string[24] = {0};
+    snprintf(sz_string, sizeof(sz_string), "%03d", value);
 
     ST7789_WriteString(143, 50, sz_string, Font_16x26, hmi_dashboard_str[hmi_dashboard_ctrl.mode].color, BLACK);
     
+}
 
+/***********************************************************************************/
+
+static void hmi_dashboard_show_target_current(void)
+{
+    uint32_t value = 0;
+
+    value  += hmi_edit[MODE_CONSTANT_CURRENT].value[INDEX_FIRST_DIGIT]*100;
+    value  += hmi_edit[MODE_CONSTANT_CURRENT].value[INDEX_SECOND_DIGIT]*10;
+    value  += hmi_edit[MODE_CONSTANT_CURRENT].value[INDEX_THIRD_DIGIT];
+
+    char sz_string[20] = {0};
+    snprintf(sz_string, sizeof(sz_string), "%d.%u", value, hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FOURTH_DIGIT]);
+
+  //  ST7789_WriteString(143, 80, sz_string, Font_16x26, hmi_dashboard_str[hmi_dashboard_ctrl.mode].color, BLACK);
+    
 }
 
 /***********************************************************************************/
@@ -267,9 +273,9 @@ void hmi_dashboard_init(void)
     hmi_dashboard_ctrl.index_field = INDEX_FIRST_DIGIT;
     hmi_dashboard_ctrl.last_index_field = hmi_dashboard_ctrl.index_field;
     hmi_dashboard_ctrl.out_state = OUT_OFF;
+    hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_DATA;
 
-    // ADS1115(&i2c_adc, &hi2c1, ADS_ADDR_GND); // Or ADS1015(&i2c, &hi2c1, ADS_ADDR_GND);
-    // ADSsetGain(&i2c_adc, GAIN_SIXTEEN);
+    hmi_dashboard_ctrl.mode = MODE_CONSTANT_VOLTAGE;
 }
 
 /***********************************************************************************/
@@ -278,9 +284,10 @@ void hmi_dashboard_show_screen(void)
 {
     ST7789_Fill_Color(BLACK);
     
-    hmi_dashboard_ctrl.mode = (hmi_dashboard_mode_t)hmi_get_screen()-2;
+    
 
     ST7789_WriteString(10, 1, "DASHBOARD", Font_16x26, YELLOW, BLACK);
+    
     ST7789_DrawLine(0, 27, 318, 27, WHITE);
     ST7789_DrawLine(0, 180, 318, 180, WHITE);
     ST7789_WriteString(12, 200, "MM TECH", Font_16x26, BLUE, BLACK);
@@ -288,23 +295,33 @@ void hmi_dashboard_show_screen(void)
     ST7789_DrawLine(137, 27, 137, 180, WHITE);
     ST7789_DrawLine(137, 145, 318, 145, WHITE);
 
-    hmi_dashboard_show_voltage();
-    hmi_dashboard_show_power();
-    hmi_dashboard_show_current();
-   // hmi_dashboard_show_temp();
-    //hmi_dashboard_show_time();
     hmi_dashboard_show_out_status();
-    hmi_dashboard_show_target();
-   // hmi_dashboard_show_resistence();
-    hmi_dashboard_show_cursor();
+    hmi_dashboard_show_target_voltage();
+    hmi_dashboard_show_target_current();
+    //hmi_dashboard_show_cursor();
+
 }
 
 /***********************************************************************************/
 
 void hmi_dashboard_update_data(void)
 {
-    //hmi_dashboard_show_resistence();
-   hmi_dashboard_show_voltage();
+    switch (hmi_dashboard_ctrl.display_update)
+    {
+    case DISPLAY_NOT_UPDTATING_DATA:
+        break;
+    case DISPLAY_UPDATING_DATA:
+        hmi_dashboard_show_voltage();
+        hmi_dashboard_show_current();
+        hmi_dashboard_show_power();
+        break;
+    
+    default:
+        break;
+    }
+
+
+
 }
 
 /***********************************************************************************/
@@ -320,6 +337,7 @@ void hmi_dashboard_exit(void)
 
 void hmi_dashboard_update_button(button_id_t button_id, button_press_type_t button_press_type)
 {
+    hmi_dashboard_ctrl.display_update = DISPLAY_NOT_UPDTATING_DATA;
     switch (button_id)
     {
     case BUTTON_LEFT_ID:
@@ -349,7 +367,8 @@ void hmi_dashboard_update_button(button_id_t button_id, button_press_type_t butt
         break;
     }
 
-    hmi_dashboard_show_cursor();
+    //hmi_dashboard_show_cursor();
+    hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_DATA;
 
 }
 
@@ -357,6 +376,7 @@ void hmi_dashboard_update_button(button_id_t button_id, button_press_type_t butt
 
 void hmi_dashboard_update_encoder(enc_state_t enc_state)
 {
+    hmi_dashboard_ctrl.display_update = DISPLAY_NOT_UPDTATING_DATA;
     switch (enc_state)
     {
     case ENC_STATE_CCW:
@@ -368,7 +388,10 @@ void hmi_dashboard_update_encoder(enc_state_t enc_state)
     default:
         break;
     }
-    hmi_dashboard_show_target();
+    hmi_dashboard_show_target_voltage();
+
+    hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_DATA;
+    
 }
 
 /***********************************************************************************/

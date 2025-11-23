@@ -47,6 +47,7 @@ ${PROJ_PATH}/HMI/Src/hmi_intro.c
 ${PROJ_PATH}/HMI/Src/hmi_dashboard.c
 ${PROJ_PATH}/App/Src/adc.c
 ${PROJ_PATH}/App/Src/dac.c
+${PROJ_PATH}/App/Src/app.c
 
 ${PROJ_PATH}/DISPLAY/Src/st7789.c
 ${PROJ_PATH}/DISPLAY/Src/fonts.c

@@ -173,8 +173,22 @@ void hmi_tread_update_screen(void const *pvParameters)
 {
     for(;;)
     {
-        hmi_showing_data();
-        HAL_GPIO_TogglePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin);
+        switch (hmi_ctrl.state)
+        {
+        case HMI_SHOWING_SCREEN:
+            hmi_ctrl.state = HMI_SHOWING_DATA;
+            break;
+        case HMI_SHOWING_DATA:
+            
+            hmi_ctrl.state = HMI_SHOWING_UPDATE_DATA;
+            break;
+        case HMI_SHOWING_UPDATE_DATA:
+            hmi_showing_data();
+            HAL_GPIO_TogglePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin);
+            break;
+        default:
+            break;
+        }
         vTaskDelay(200);
     }
 }

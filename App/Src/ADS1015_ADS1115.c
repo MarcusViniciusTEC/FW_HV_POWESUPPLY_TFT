@@ -6,6 +6,9 @@
  */
 
  #include "ADS1015_ADS1115.h"
+ #include "FreeRTOS.h"
+#include "task.h"
+#include "cmsis_os.h"
 
  // Write the register
  static void writeRegister(ADS1xx5_I2C *i2c, uint8_t reg, uint16_t value) {
@@ -73,50 +76,37 @@
  
  // Gets a single-ended ADC reading from the specified channel
  uint16_t ADSreadADC_SingleEnded(ADS1xx5_I2C *i2c, uint8_t channel) {
-     if (channel > 3) {
-         return 0;
-     }
- 
-     // Start with default values
-     uint16_t config =
-     ADS1015_REG_CONFIG_CQUE_NONE 			|   	// Disable the comparator (default val)
-             ADS1015_REG_CONFIG_CLAT_NONLAT 	|  	// Non-latching (default val)
-             ADS1015_REG_CONFIG_CPOL_ACTVLOW | 	// Alert/Rdy active low   (default val)
-             ADS1015_REG_CONFIG_CMODE_TRAD 	| 	// Traditional comparator (default val)
-             ADS1015_REG_CONFIG_DR_1600SPS 	| 	// 1600 samples per second (default)
-             ADS1015_REG_CONFIG_MODE_SINGLE;   	// Single-shot mode (default)
- 
-     // Set PGA/voltage range
-     config |= i2c->m_gain;
- 
-     // Set single-ended input channel
-     switch (channel) {
-     case (0):
-         config |= ADS1015_REG_CONFIG_MUX_SINGLE_0;
-         break;
-     case (1):
-         config |= ADS1015_REG_CONFIG_MUX_SINGLE_1;
-         break;
-     case (2):
-         config |= ADS1015_REG_CONFIG_MUX_SINGLE_2;
-         break;
-     case (3):
-         config |= ADS1015_REG_CONFIG_MUX_SINGLE_3;
-         break;
-     }
- 
-     // Set 'start single-conversion' bit
-     config |= ADS1015_REG_CONFIG_OS_SINGLE;
- 
-     // Write config register to the ADC
-     writeRegister(i2c, ADS1015_REG_POINTER_CONFIG, config);
- 
-     // Wait for the conversion to complete
-     HAL_Delay(i2c->m_conversionDelay);
- 
-     // Read the conversion results
-     // Shift 12-bit results right 4 bits for the ADS1015
-     return readRegister(i2c, ADS1015_REG_POINTER_CONVERT) >> i2c->m_bitShift;
+    uint16_t config =
+        ADS1015_REG_CONFIG_CQUE_NONE |
+        ADS1015_REG_CONFIG_CLAT_NONLAT |
+        ADS1015_REG_CONFIG_CPOL_ACTVLOW |
+        ADS1015_REG_CONFIG_CMODE_TRAD |
+        ADS1015_REG_CONFIG_DR_1600SPS |
+        ADS1015_REG_CONFIG_MODE_SINGLE;
+
+    // gain
+    config |= i2c->m_gain;
+
+    // mux
+    config |= (0x4000 | (channel << 12)); // forma simples e garantida
+
+    // start conversion
+    config |= ADS1015_REG_CONFIG_OS_SINGLE;
+
+    writeRegister(i2c, ADS1015_REG_POINTER_CONFIG, config);
+
+    // wait conversion done
+    while (1)
+    {
+        uint16_t reg = readRegister(i2c, ADS1015_REG_POINTER_CONFIG);
+
+        if (reg & 0x8000)   // bit OS = 1 → DONE
+            break;
+
+        vTaskDelay(pdMS_TO_TICKS(2)); // RTOS-safe
+    }
+
+    return readRegister(i2c, ADS1015_REG_POINTER_CONVERT) >> i2c->m_bitShift;
  }
  
  /*

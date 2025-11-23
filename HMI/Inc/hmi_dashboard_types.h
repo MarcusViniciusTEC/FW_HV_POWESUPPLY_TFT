@@ -31,6 +31,11 @@ typedef struct
     uint8_t value[NUMBER_OF_INDEX_DIGITS];
 }hmi_edit_t;
 
+typedef enum
+{
+    DISPLAY_NOT_UPDTATING_DATA= 0U,
+    DISPLAY_UPDATING_DATA
+}hmi_dashboard_update_display_stataus_t;
 
 typedef struct 
 {
@@ -38,6 +43,7 @@ typedef struct
     uint8_t index_field;
     uint8_t last_index_field;
     hmi_out_state_t out_state;
+    hmi_dashboard_update_display_stataus_t display_update;
 }hmi_dashboard_ctrl_t;
 
 typedef struct 
@@ -53,6 +59,9 @@ typedef struct
     char *symbol;
     uint16_t color;
 }hmi_dashboard_title_t;
+
+
+
 
 
 #endif
