@@ -189,6 +189,6 @@ void hmi_tread_update_screen(void const *pvParameters)
         default:
             break;
         }
-        vTaskDelay(200);
+        vTaskDelay(300);
     }
 }

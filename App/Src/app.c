@@ -4,12 +4,22 @@
 
 uint32_t app_get_centivolts(adc_channels_t channel)
 {
-    return ADC_ADS1115_get_raw(channel)*1.025641026; // NEEDS CALIBRATION;
+    return (uint32_t)ADC_ADS1115_get_raw(channel)*1.2152777; // NEEDS CALIBRATION;
 }
 
 uint32_t app_get_miliamperes(adc_channels_t channel)
 {
-    return ADC_ADS1115_get_raw(channel)*0.1136; // NEEDS CALIBRATION;
+    uint32_t miliamps = (ADC_ADS1115_get_raw(channel)-389)*0.090025;
+
+    if(miliamps > 3000)
+    {
+        miliamps = 0;
+    }else
+    {
+        
+    }
+
+    return miliamps;
 }
 
 uint32_t app_get_centiwatts(void)

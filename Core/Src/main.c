@@ -431,6 +431,7 @@ void StartDefaultTask(void const * argument)
   encoder_init();
   DAC_MCP4725_init();
   adc_init();
+  DAC_MCP4725_init();
 
 
   DAC_MCP4725_set(DAC_CURRENT, 500);

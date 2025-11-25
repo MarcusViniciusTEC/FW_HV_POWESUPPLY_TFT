@@ -91,7 +91,7 @@ uint32_t median_filter(uint8_t ch, uint16_t new_sample)
 uint16_t ema_filter(adc_channels_t channel, uint16_t new_sample)
 {
     static uint16_t filtered[ADC_NUMBER_OF_CHANELS] = {0};
-    filtered[channel] = filtered[channel] + ((new_sample - filtered[channel]) / 8);
+    filtered[channel] = filtered[channel] + ((new_sample - filtered[channel]) / 2);
     return filtered[channel];
 }
 
@@ -126,7 +126,7 @@ void adc_thread(void const *pvParameters)
         {  
             adc_ctrl[channel_index].raw_value = ADSreadADC_SingleEnded(&adc, channel_index);
         }      
-        vTaskDelay(100);
+        vTaskDelay(130);
     }
 }
 

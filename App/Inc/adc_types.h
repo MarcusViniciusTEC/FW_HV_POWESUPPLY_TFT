@@ -2,7 +2,7 @@
 #define _ADC_TYPES_H_
 
 
-#define MEDIAN_SIZE 10
+#define MEDIAN_SIZE 5
 #define NUMBER_OF_SAMPLES 50
 
 #include "stdint.h"
