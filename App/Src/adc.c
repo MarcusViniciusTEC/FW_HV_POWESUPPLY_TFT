@@ -69,12 +69,10 @@ uint32_t median_filter(uint8_t ch, uint16_t new_sample)
     if (index_adc[ch] >= MEDIAN_SIZE)
         index_adc[ch] = 0;
 
-    // copia os dados para um array temporário
     uint16_t temp[MEDIAN_SIZE];
     for (uint8_t i = 0; i < MEDIAN_SIZE; i++)
         temp[i] = window[ch][i];
 
-    // ordena (bubble sort simplificado)
     for (uint8_t i = 0; i < MEDIAN_SIZE - 1; i++)
         for (uint8_t j = i + 1; j < MEDIAN_SIZE; j++)
             if (temp[j] < temp[i]) {
@@ -82,10 +80,7 @@ uint32_t median_filter(uint8_t ch, uint16_t new_sample)
                 temp[i] = temp[j];
                 temp[j] = t;
             }
-
-    // retorna a mediana
     return temp[MEDIAN_SIZE / 2];
-
 }
 
 uint16_t ema_filter(adc_channels_t channel, uint16_t new_sample)
