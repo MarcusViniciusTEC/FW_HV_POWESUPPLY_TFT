@@ -1,10 +1,23 @@
 
 
 #include "adc.h"
+#include "adc.h"
 
 uint32_t app_get_centivolts(adc_channels_t channel)
 {
-    return (uint32_t)ADC_ADS1115_get_raw(channel)*1.2152777; // NEEDS CALIBRATION;
+    uint32_t value = 0;
+    switch (adc_get_res_divider_status())
+    {
+    case ADC_RESISTOR_RESET_DIVIDER:
+        value = (uint32_t)ADC_ADS1115_get_raw(channel)*0.7352; // NEEDS CALIBRATION;
+        break;
+    case ADC_RESISTOR_SET_DIVIDER:
+        value = (uint32_t)ADC_ADS1115_get_raw(channel)*27; // NEEDS CALIBRATION;
+        break;
+    default:
+        break;
+    }
+   return value;
 }
 
 uint32_t app_get_miliamperes(adc_channels_t channel)

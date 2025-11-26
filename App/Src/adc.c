@@ -14,6 +14,7 @@
 
 ADS1xx5_I2C adc;
 
+
 /***********************************************************************************/
 
 void adc_thread(void const *pvParameters);
@@ -27,6 +28,13 @@ static uint8_t index_adc[ADC_NUMBER_OF_CHANELS] = {0};
 void adc_init(void);
 void ADC_ADS1115_init(void);
 uint32_t ADC_ADS1115_get_raw(adc_channels_t channel);
+
+/***********************************************************************************/
+
+adc_res_divider_stauts_t adc_get_res_divider_status(void)
+{
+    return adc_ctrl[ADC_CH_VOLTAGE].resistor_status;
+}
 
 /***********************************************************************************/
 
@@ -58,8 +66,6 @@ void ADC_ADS1115_init(void)
 }
 
 /***********************************************************************************/
-
-
 
 uint32_t median_filter(uint8_t ch, uint16_t new_sample)
 {
@@ -120,8 +126,19 @@ void adc_thread(void const *pvParameters)
         for(uint8_t channel_index = 0; channel_index < ADC_NUMBER_OF_CHANELS; channel_index++)
         {  
             adc_ctrl[channel_index].raw_value = ADSreadADC_SingleEnded(&adc, channel_index);
+            if(adc_ctrl[ADC_CH_VOLTAGE].raw_value > 20000)
+            {
+                HAL_GPIO_WritePin(SET_R_DIVIDER_GPIO_Port, SET_R_DIVIDER_Pin, GPIO_PIN_SET);
+                adc_ctrl[ADC_CH_VOLTAGE].resistor_status = ADC_RESISTOR_SET_DIVIDER;
+            }
+            if(adc_ctrl[ADC_CH_VOLTAGE].raw_value < 19000)
+            {   
+                //HAL_GPIO_WritePin(SET_R_DIVIDER_GPIO_Port, SET_R_DIVIDER_Pin, GPIO_PIN_RESET);
+                adc_ctrl[ADC_CH_VOLTAGE].resistor_status = ADC_RESISTOR_RESET_DIVIDER;
+            }
+                    //HAL_GPIO_WritePin(SET_R_DIVIDER_GPIO_Port, SET_R_DIVIDER_Pin, GPIO_PIN_RESET);
         }      
-        vTaskDelay(130);
+        vTaskDelay(50);
     }
 }
 

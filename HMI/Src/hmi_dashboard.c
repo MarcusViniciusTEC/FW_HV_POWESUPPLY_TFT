@@ -38,6 +38,7 @@ static void hmi_dashboard_show_out_status(void);
 static void hmi_dashboard_show_target_voltage(void);
 static void hmi_dashboard_show_target_current(void);
 static void hmi_dashboard_show_cursor(void);
+static void hmi_dashboard_show_current_in(void);
 static void hmi_dashboard_increment_digit(void);
 static void hmi_dashboard_decrement_digit(void);
 static void hmi_dashboard_increment_field(void);
@@ -62,7 +63,6 @@ uint32_t hmi_dashboard_get_target_current(void)
     t_current += hmi_edit[MODE_CONSTANT_CURRENT].value[INDEX_THIRD_DIGIT    ]*10;
     t_current += hmi_edit[MODE_CONSTANT_CURRENT].value[INDEX_FOURTH_DIGIT   ];
     return t_current;
-
 }
 
 /***********************************************************************************/
@@ -94,6 +94,12 @@ hmi_out_state_t hmi_dashboard_get_out_state(void)
 
 /***********************************************************************************/
 
+static void hmi_dashboard_show_current_in(void)
+{
+    ST7789_WriteString(10, 190, "IN:4.00 A", Font_11x18, BLUE, BLACK);
+}
+
+/***********************************************************************************/
 
 static void hmi_dashboard_show_current(void)
 {
@@ -142,7 +148,8 @@ static void hmi_dashboard_show_power(void)
 
 static void hmi_dashboard_show_temp(void)
 {
-    ST7789_WriteString(143, 110, "Temp: 30.5'C",Font_11x18, MAGENTA, BLACK);
+    ST7789_WriteString(185, 190, "SINK: 30.5'C",Font_11x18, MAGENTA, BLACK);
+    ST7789_WriteString(185, 205, "TRFO: 30.5'C",Font_11x18, MAGENTA, BLACK);
 }
 
 /***********************************************************************************/
@@ -181,11 +188,8 @@ static void hmi_dashboard_show_out_status(void)
 
 static void hmi_dashboard_show_target_voltage(void)
 {
-
     ST7789_WriteString(143, 30, "SET:",Font_11x18, LIGHTBLUE, BLACK);
     uint32_t value = 0;
-
- 
 
     char sz_string[24] = {0};
     snprintf(sz_string, sizeof(sz_string), "%u%u%u.%u",
@@ -196,7 +200,6 @@ static void hmi_dashboard_show_target_voltage(void)
 
     ST7789_WriteString(143, 50, sz_string, Font_16x26, GREEN, BLACK);
     ST7789_WriteString(250, 50, "V", Font_16x26, GREEN, BLACK);
-    
 }
 
 /***********************************************************************************/
@@ -322,13 +325,31 @@ static void hmi_dashboard_increment_digit(void)
             hmi_edit[hmi_dashboard_ctrl.mode].value[hmi_dashboard_ctrl.index_field - 2] = hmi_edit[hmi_dashboard_ctrl.mode].value[hmi_dashboard_ctrl.index_field -2] +1;   
         }
     }
-    if(hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT] >= 5)
+
+    switch (hmi_dashboard_ctrl.mode)
     {
-        hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT] = 5;  
-        for(uint8_t index = INDEX_SECOND_DIGIT; index < NUMBER_OF_INDEX_DIGITS; index++)
+    case MODE_CONSTANT_VOLTAGE:
+        if (hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT] >= 5)
         {
-            hmi_edit[hmi_dashboard_ctrl.mode].value[index] =   MIN_DIGIT; 
-        }   
+            hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT] = 5;
+            for (uint8_t index = INDEX_SECOND_DIGIT; index < NUMBER_OF_INDEX_DIGITS; index++)
+            {
+                hmi_edit[hmi_dashboard_ctrl.mode].value[index] = MIN_DIGIT;
+            }
+        }
+        break;
+    case MODE_CONSTANT_CURRENT:
+        if (hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT] >= 2)
+        {
+            hmi_edit[hmi_dashboard_ctrl.mode].value[INDEX_FIRST_DIGIT] = 2;
+            for (uint8_t index = INDEX_SECOND_DIGIT; index < NUMBER_OF_INDEX_DIGITS; index++)
+            {
+                hmi_edit[hmi_dashboard_ctrl.mode].value[index] = MIN_DIGIT;
+            }
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -393,14 +414,10 @@ void hmi_dashboard_init(void)
 void hmi_dashboard_show_screen(void)
 {
     ST7789_Fill_Color(BLACK);
-    
-    
-
     ST7789_WriteString(10, 1, "-----DASHBOARD----", Font_16x26, YELLOW, BLACK);
     
     ST7789_DrawLine(0, 27, 318, 27, WHITE);
     ST7789_DrawLine(0, 180, 318, 180, WHITE);
-    ST7789_WriteString(12, 200, "MM TECH", Font_16x26, BLUE, BLACK);
     ST7789_DrawRectangle(0, 0, 318, 239, WHITE);
     ST7789_DrawLine(137, 27, 137, 180, WHITE);
     ST7789_DrawLine(137, 145, 318, 145, WHITE);
@@ -408,8 +425,9 @@ void hmi_dashboard_show_screen(void)
     hmi_dashboard_show_out_status();
     hmi_dashboard_show_target_voltage();
     hmi_dashboard_show_target_current();
+    hmi_dashboard_show_current_in();
     hmi_dashboard_show_cursor();
-
+    hmi_dashboard_show_temp();
 }
 
 /***********************************************************************************/

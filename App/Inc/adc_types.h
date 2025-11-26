@@ -7,6 +7,11 @@
 
 #include "stdint.h"
 
+typedef enum
+{
+    ADC_RESISTOR_SET_DIVIDER = 0U,
+    ADC_RESISTOR_RESET_DIVIDER,
+}adc_res_divider_stauts_t;
 
 typedef struct {
     uint16_t window[MEDIAN_SIZE];
@@ -16,6 +21,7 @@ typedef struct {
 
 typedef struct {
     uint32_t raw_value;
+    adc_res_divider_stauts_t resistor_status;
 } adc_ctrl_t;
 
 
