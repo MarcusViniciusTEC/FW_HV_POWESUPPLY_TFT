@@ -418,22 +418,22 @@ void hmi_dashboard_update_data(void)
 {
     switch (hmi_dashboard_ctrl.display_update)
     {
-    case DISPLAY_NOT_UPDTATING_DATA:
+    case DISPLAY_NOT_UPDTATING_EVENT:
+        break;
+    case DISPLAY_UPDATING_EVENT:
+        hmi_dashboard_show_out_status();
+        hmi_dashboard_show_target_voltage();
+        hmi_dashboard_show_target_current();
         hmi_dashboard_show_cursor();
+        hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_DATA;
         break;
     case DISPLAY_UPDATING_DATA:
         hmi_dashboard_show_voltage();
         hmi_dashboard_show_current();
         hmi_dashboard_show_power();
-        hmi_dashboard_show_cursor();
-        break;
-    
     default:
         break;
     }
-
-
-
 }
 
 /***********************************************************************************/
@@ -449,9 +449,8 @@ void hmi_dashboard_exit(void)
 
 void hmi_dashboard_update_button(button_id_t button_id, button_press_type_t button_press_type)
 {
-    hmi_dashboard_ctrl.display_update = DISPLAY_NOT_UPDTATING_DATA;
+    hmi_dashboard_ctrl.display_update = DISPLAY_NOT_UPDTATING_EVENT;
 
-    
     switch (button_id)
     {
     case BUTTON_LEFT_ID:
@@ -462,7 +461,6 @@ void hmi_dashboard_update_button(button_id_t button_id, button_press_type_t butt
         break;
     case BUTTON_OUT_STATE_ID:
         hmi_dashboard_toggle_mode();
-        hmi_dashboard_show_out_status();
         break;
     case BUTTON_ENC_ID:
         switch (button_press_type)
@@ -480,18 +478,15 @@ void hmi_dashboard_update_button(button_id_t button_id, button_press_type_t butt
     default:
         break;
     }
-
-    
-    hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_DATA;
-
+    hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_EVENT;
 }
 
 /***********************************************************************************/
 
 void hmi_dashboard_update_encoder(enc_state_t enc_state)
 {
-    
-    hmi_dashboard_ctrl.display_update = DISPLAY_NOT_UPDTATING_DATA;
+    hmi_dashboard_ctrl.display_update = DISPLAY_NOT_UPDTATING_EVENT;
+
     switch (enc_state)
     {
     case ENC_STATE_CCW:
@@ -503,11 +498,7 @@ void hmi_dashboard_update_encoder(enc_state_t enc_state)
     default:
         break;
     }
-    hmi_dashboard_show_target_voltage();
-    hmi_dashboard_show_target_current();
-
-    hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_DATA;
-    
+    hmi_dashboard_ctrl.display_update = DISPLAY_UPDATING_EVENT;
 }
 
 /***********************************************************************************/

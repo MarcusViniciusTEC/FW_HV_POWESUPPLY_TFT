@@ -36,6 +36,8 @@ static encoder_data_t encoder_data [] = {{hmi_showing_update_data_encoder, 0, 0}
 void hmi_init(void)
 {
 
+    hmi_ctrl.state = HMI_SHOWING_SCREEN;
+
     for(hmi_ctrl.screen_id = 0; hmi_ctrl.screen_id < HMI_NUMBER_OF_SCREENS; hmi_ctrl.screen_id++)
     {
         hmi_vector_screens[hmi_ctrl.screen_id].init();
@@ -46,7 +48,7 @@ void hmi_init(void)
     TaskHandle_t xHandle = NULL;
     if(xTaskCreate((TaskFunction_t)hmi_tread,         
                     "HMI",                         
-                    128	,                                   
+                    256	,                                   
                     NULL,                             
                     osPriorityNormal ,                        
                     &xHandle )!= pdPASS)                     
@@ -60,9 +62,9 @@ void hmi_init(void)
 
     if(xTaskCreate((TaskFunction_t)hmi_tread_update_screen,         
                     "HMI UPDATE",                         
-                    128	,                           
+                    256	,                           
                     NULL,                           
-                    osPriorityNormal,                     
+                    osPriorityAboveNormal,                     
                     &xHandle )  != pdPASS)
                     {
 
@@ -140,7 +142,6 @@ void hmi_tread(void const *pvParameters)
     {
         if(hmi_ctrl.screen_id != hmi_ctrl.next_screen_id)
         {
-            
             hmi_ctrl.last_screen_id = hmi_ctrl.screen_id;
             hmi_ctrl.screen_id = hmi_ctrl.next_screen_id;
             hmi_ctrl.state = HMI_SHOWING_SCREEN;
@@ -152,7 +153,7 @@ void hmi_tread(void const *pvParameters)
             hmi_ctrl.state = HMI_SHOWING_DATA;
             break;
         case HMI_SHOWING_DATA:
-            
+            vTaskDelay(pdMS_TO_TICKS(200));
             hmi_ctrl.state = HMI_SHOWING_UPDATE_DATA;
             break;
         case HMI_SHOWING_UPDATE_DATA:
@@ -176,11 +177,8 @@ void hmi_tread_update_screen(void const *pvParameters)
         switch (hmi_ctrl.state)
         {
         case HMI_SHOWING_SCREEN:
-            hmi_ctrl.state = HMI_SHOWING_DATA;
             break;
         case HMI_SHOWING_DATA:
-            
-            hmi_ctrl.state = HMI_SHOWING_UPDATE_DATA;
             break;
         case HMI_SHOWING_UPDATE_DATA:
             hmi_showing_data();
@@ -189,6 +187,6 @@ void hmi_tread_update_screen(void const *pvParameters)
         default:
             break;
         }
-        vTaskDelay(300);
+        vTaskDelay(10);
     }
 }

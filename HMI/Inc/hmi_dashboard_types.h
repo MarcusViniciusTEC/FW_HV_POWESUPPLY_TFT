@@ -33,7 +33,8 @@ typedef struct
 
 typedef enum
 {
-    DISPLAY_NOT_UPDTATING_DATA= 0U,
+    DISPLAY_NOT_UPDTATING_EVENT= 0U,
+    DISPLAY_UPDATING_EVENT,
     DISPLAY_UPDATING_DATA
 }hmi_dashboard_update_display_stataus_t;
 

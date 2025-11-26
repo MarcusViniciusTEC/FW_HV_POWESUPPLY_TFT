@@ -4,7 +4,7 @@
 
 #endif
 
-#define HMI_MENU_NUMBER_OF_ITEMS 6
+#define HMI_MENU_NUMBER_OF_ITEMS 4
 #define HMI_CURSOR ">"
 
 #define vector_hmi_coordinate_retangle_menu_default     \
@@ -20,32 +20,22 @@
 #define hmi_menu_vector_item_default                    \
 {                                                       \
     {                                                   \
-        .id = HMI_MENU_ID_CONSTANT_CURRENT,             \
-        .string = "1.CONSTANT CURRENT"                  \
+        .id = HMI_MENU_ID_DASHBOARD,                     \
+        .string = "1.DASHBOARD"                         \
     }                                                   \
     ,                                                   \
     {                                                   \
-        .id = HMI_MENU_ID_CONSTANT_VOLTAGE,             \
-        .string ="2.CONSTANT VOLTAGE"                   \
+        .id = HMI_MENU_ID_CURRENT_RAMP,                 \
+        .string ="2.CURRENT RAMP"                       \
     }                                                   \
     ,                                                   \
     {                                                   \
-        .id = HMI_MENU_ID_CONSTANT_RESISTENCE,          \
-        .string ="3.CONSTANT RESITENCE"                 \
-    }                                                   \
-    ,                                                   \
-    {                                                   \
-        .id = HMI_MENU_ID_DYNAMIC_MODE,                 \
-        .string ="4.DYNAMIC MODE"                       \
-    }                                                   \
-    ,                                                   \
-    {                                                   \
-        .id = HMI_MENU_ID_PULSE_MODE,                   \
-        .string = "5.PULSE MODE"                        \
+        .id = HMI_MENU_ID_VOLTAGE_RAMP,                 \
+        .string ="3.VOLTAGE RAMP"                       \
     }                                                   \
     ,                                                   \
     {                                                   \
         .id = HMI_MENU_ID_SETTINGS,                     \
-        .string = "6.SETTINGS"                          \
+        .string ="4.SETTINGS"                           \   
     }                                                   \
 }

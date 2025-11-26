@@ -51,7 +51,7 @@ static void hmi_menu_decrement_item_index(void)
     hmi_menu_ctrl.item_index--;
     if(hmi_menu_ctrl.item_index > HMI_MENU_ID_SETTINGS)
     {
-        hmi_menu_ctrl.item_index = HMI_MENU_ID_CONSTANT_CURRENT;
+        hmi_menu_ctrl.item_index = HMI_MENU_ID_DASHBOARD;
     }
 }
 
@@ -59,11 +59,11 @@ static void hmi_menu_decrement_item_index(void)
 static void hmi_menu_show_menu_cursor(void)
 {
     ST7789_WriteString(10, (60 + (hmi_menu_ctrl.item_index*20)), HMI_CURSOR, Font_11x18, YELLOW, BLACK);
-    if(hmi_menu_ctrl.item_index > HMI_MENU_ID_CONSTANT_CURRENT)
+    if(hmi_menu_ctrl.item_index > 0)
     {
         ST7789_WriteString(10, (40 + (hmi_menu_ctrl.item_index*20)), " ", Font_11x18, YELLOW, BLACK);
     }
-    if(hmi_menu_ctrl.item_index <= HMI_MENU_ID_PULSE_MODE)
+    if(hmi_menu_ctrl.item_index <= HMI_MENU_ID_SETTINGS)
     {
         ST7789_WriteString(10, (80 + (hmi_menu_ctrl.item_index*20)), " ", Font_11x18, YELLOW, BLACK);
     }
@@ -83,7 +83,7 @@ static void hmi_menu_show_menu_itens(void)
         ST7789_WriteString(35, (60+(index*20)), hmi_menu_item_vector[index].string, Font_11x18, WHITE, BLACK);
     }
     ST7789_DrawLine(0, 180, 318, 180, WHITE);
-    ST7789_WriteString(12, 200, "ABL Solutions Ind", Font_16x26, BLUE, BLACK);
+    ST7789_WriteString(12, 200, "MV TEC", Font_16x26, BLUE, BLACK);
 }
 
 /***********************************************************************************/
@@ -119,19 +119,14 @@ void hmi_menu_update_button(button_id_t button_id, button_press_type_t button_pr
         case BUTTON_SHORT_PRESS:
             switch (hmi_menu_item_vector[hmi_menu_ctrl.item_index].id)
             {
-            case HMI_MENU_ID_CONSTANT_CURRENT:
+            case HMI_MENU_ID_DASHBOARD:
+                hmi_set_screen(HMI_ID_SCREEN_DASHBOARD);
                 break;
-            case HMI_MENU_ID_CONSTANT_VOLTAGE:
+            case HMI_MENU_ID_VOLTAGE_RAMP:
                 break;
-            case HMI_MENU_ID_CONSTANT_RESISTENCE:
-                break;
-            case HMI_MENU_ID_DYNAMIC_MODE:
-                break;
-            case HMI_MENU_ID_PULSE_MODE:
+            case HMI_MENU_ID_CURRENT_RAMP:
                 break;
             case HMI_MENU_ID_SETTINGS:
-                break;
-            default:
                 break;
             }
             break;
