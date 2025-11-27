@@ -134,7 +134,7 @@ void adc_thread(void const *pvParameters)
             if(adc_ctrl[ADC_CH_VOLTAGE].raw_value < 19000)
             {   
                 //HAL_GPIO_WritePin(SET_R_DIVIDER_GPIO_Port, SET_R_DIVIDER_Pin, GPIO_PIN_RESET);
-                adc_ctrl[ADC_CH_VOLTAGE].resistor_status = ADC_RESISTOR_RESET_DIVIDER;
+                //adc_ctrl[ADC_CH_VOLTAGE].resistor_status = ADC_RESISTOR_RESET_DIVIDER;
             }
                     //HAL_GPIO_WritePin(SET_R_DIVIDER_GPIO_Port, SET_R_DIVIDER_Pin, GPIO_PIN_RESET);
         }      

@@ -9,10 +9,10 @@ uint32_t app_get_centivolts(adc_channels_t channel)
     switch (adc_get_res_divider_status())
     {
     case ADC_RESISTOR_RESET_DIVIDER:
-        value = (uint32_t)ADC_ADS1115_get_raw(channel)*0.7352; // NEEDS CALIBRATION;
+        value = (uint32_t)ADC_ADS1115_get_raw(channel)*2.727272; // NEEDS CALIBRATION;
         break;
     case ADC_RESISTOR_SET_DIVIDER:
-        value = (uint32_t)ADC_ADS1115_get_raw(channel)*27; // NEEDS CALIBRATION;
+        value = (uint32_t)ADC_ADS1115_get_raw(channel)*2.7272; // NEEDS CALIBRATION;
         break;
     default:
         break;
@@ -22,7 +22,7 @@ uint32_t app_get_centivolts(adc_channels_t channel)
 
 uint32_t app_get_miliamperes(adc_channels_t channel)
 {
-    uint32_t miliamps = (ADC_ADS1115_get_raw(channel)-389)*0.090025;
+    uint32_t miliamps = (ADC_ADS1115_get_raw(channel)-389)*0.17285;
 
     if(miliamps > 3000)
     {
