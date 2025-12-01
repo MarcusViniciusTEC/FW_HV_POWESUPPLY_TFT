@@ -73,6 +73,12 @@ void Error_Handler(void);
 #define ST7789_RST_GPIO_Port GPIOB
 #define ST7789_CS_Pin GPIO_PIN_2
 #define ST7789_CS_GPIO_Port GPIOB
+#define MUX_S2_Pin GPIO_PIN_10
+#define MUX_S2_GPIO_Port GPIOA
+#define MUX_S1_Pin GPIO_PIN_11
+#define MUX_S1_GPIO_Port GPIOA
+#define MUX_S0_Pin GPIO_PIN_12
+#define MUX_S0_GPIO_Port GPIOA
 #define SET_R_DIVIDER_Pin GPIO_PIN_4
 #define SET_R_DIVIDER_GPIO_Port GPIOB
 #define ENC_BT_Pin GPIO_PIN_8

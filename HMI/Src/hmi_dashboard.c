@@ -148,8 +148,18 @@ static void hmi_dashboard_show_power(void)
 
 static void hmi_dashboard_show_temp(void)
 {
-    ST7789_WriteString(185, 190, "SINK: 30.5'C",Font_11x18, MAGENTA, BLACK);
-    ST7789_WriteString(185, 205, "TRFO: 30.5'C",Font_11x18, MAGENTA, BLACK);
+    uint32_t temp_tranformer = app_get_temperature(ADC_TEMP_CH_TRANSFORMER);
+    uint32_t temp_heatsink = app_get_temperature(ADC_TEMP_CH_HEATSINK);
+    char sz_string[28] = {0};
+    snprintf(sz_string, sizeof(sz_string), "SINK:%02d.%01d'C",
+             (int)(temp_tranformer / 100),
+             (int)(temp_tranformer % 10));
+    ST7789_WriteString(185, 190, sz_string, Font_11x18, CYAN, BLACK);
+
+    snprintf(sz_string, sizeof(sz_string), "TRFO:%02d.%01d'C",
+             (int)(temp_heatsink/ 100),
+             (int)(temp_heatsink % 10));
+    ST7789_WriteString(185, 210, sz_string, Font_11x18, CYAN, BLACK);
 }
 
 /***********************************************************************************/
@@ -189,8 +199,6 @@ static void hmi_dashboard_show_out_status(void)
 static void hmi_dashboard_show_target_voltage(void)
 {
     ST7789_WriteString(143, 30, "SET:",Font_11x18, LIGHTBLUE, BLACK);
-    uint32_t value = 0;
-
     char sz_string[24] = {0};
     snprintf(sz_string, sizeof(sz_string), "%u%u%u.%u",
     hmi_edit[MODE_CONSTANT_VOLTAGE].value[INDEX_FIRST_DIGIT],
@@ -449,6 +457,7 @@ void hmi_dashboard_update_data(void)
         hmi_dashboard_show_voltage();
         hmi_dashboard_show_current();
         hmi_dashboard_show_power();
+        hmi_dashboard_show_temp();
     default:
         break;
     }

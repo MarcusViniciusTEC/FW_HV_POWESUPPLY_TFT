@@ -29,6 +29,7 @@
 #include "encoder.h"
 #include "dac.h"
 #include "adc.h"
+#include "app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,6 +119,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+
+  DAC_MCP4725_set(DAC_VOLTAGE, 0);
+  DAC_MCP4725_set(DAC_CURRENT, 0);
   
   
 
@@ -373,6 +377,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, ST7789_DC_Pin|ST7789_RST_Pin|ST7789_CS_Pin|SET_R_DIVIDER_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, MUX_S2_Pin|MUX_S1_Pin|MUX_S0_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pins : LED_BOARD_Pin LED_STATUS_Pin */
   GPIO_InitStruct.Pin = LED_BOARD_Pin|LED_STATUS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -398,6 +405,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : MUX_S2_Pin MUX_S1_Pin MUX_S0_Pin */
+  GPIO_InitStruct.Pin = MUX_S2_Pin|MUX_S1_Pin|MUX_S0_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SET_R_DIVIDER_Pin */
   GPIO_InitStruct.Pin = SET_R_DIVIDER_Pin;
@@ -438,11 +452,8 @@ void StartDefaultTask(void const * argument)
   encoder_init();
   DAC_MCP4725_init();
   adc_init();
+  app_init();
   DAC_MCP4725_init();
-
-
-  DAC_MCP4725_set(DAC_CURRENT, 500);
-  DAC_MCP4725_set(DAC_VOLTAGE, 500);
 
   for(;;)
   {

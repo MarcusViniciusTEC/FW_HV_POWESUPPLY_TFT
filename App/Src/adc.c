@@ -89,6 +89,8 @@ uint32_t median_filter(uint8_t ch, uint16_t new_sample)
     return temp[MEDIAN_SIZE / 2];
 }
 
+/***********************************************************************************/
+
 uint16_t ema_filter(adc_channels_t channel, uint16_t new_sample)
 {
     static uint16_t filtered[ADC_NUMBER_OF_CHANELS] = {0};
@@ -116,6 +118,46 @@ uint32_t ADC_ADS1115_get_raw(adc_channels_t channel)
    return ema_filter(channel, adc_ctrl[channel].raw_value); 
 }   
 
+/***********************************************************************************/
+
+uint32_t ADC_ADS1115_GET_Raw_temp(adc_channels_temp_t temp_channel)
+{
+    return adc_ctrl[ADC_CH_TEMP].raw_value_temp[temp_channel];
+}
+
+
+/***********************************************************************************/
+
+static void mux_select_channel(adc_channels_t channel)
+{
+    switch (channel)
+    {
+    case ADC_TEMP_CH_TRANSFORMER:
+        HAL_GPIO_WritePin(MUX_S0_GPIO_Port, MUX_S0_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MUX_S1_GPIO_Port, MUX_S1_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MUX_S2_GPIO_Port, MUX_S2_Pin, GPIO_PIN_RESET);
+        break;
+    case ADC_TEMP_CH_HEATSINK:
+        HAL_GPIO_WritePin(MUX_S0_GPIO_Port, MUX_S0_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(MUX_S1_GPIO_Port, MUX_S1_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(MUX_S2_GPIO_Port, MUX_S2_Pin, GPIO_PIN_RESET);
+        break;
+    default:
+        break;
+    }
+}
+
+/***********************************************************************************/
+
+static void adc_read_temp(void)
+{
+    for(uint8_t index_sense_temp = 0; index_sense_temp < NUMBER_OF_SENSE_TEMP; index_sense_temp++)
+    {
+        mux_select_channel(index_sense_temp);
+        vTaskDelay(pdMS_TO_TICKS(10));
+        adc_ctrl[ADC_CH_TEMP].raw_value_temp[index_sense_temp] = ADSreadADC_SingleEnded(&adc, ADC_CH_TEMP);
+    }
+}
 
 /***********************************************************************************/
 
@@ -131,6 +173,10 @@ void adc_thread(void const *pvParameters)
                 HAL_GPIO_WritePin(SET_R_DIVIDER_GPIO_Port, SET_R_DIVIDER_Pin, GPIO_PIN_SET);
                 adc_ctrl[ADC_CH_VOLTAGE].resistor_status = ADC_RESISTOR_SET_DIVIDER;
             }
+
+
+            adc_read_temp();
+            
             if(adc_ctrl[ADC_CH_VOLTAGE].raw_value < 19000)
             {   
                 //HAL_GPIO_WritePin(SET_R_DIVIDER_GPIO_Port, SET_R_DIVIDER_Pin, GPIO_PIN_RESET);
